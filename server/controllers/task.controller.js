@@ -7,9 +7,15 @@ module.exports.getAllTasks = async (req, res) => {
     if (req.query.status) {
       find.status = req.query.status;
     }
-    const tasks = await Task.find(find).select(
-      "title status timeStart timeFinish",
-    );
+    // sort (quy định front end gửi lên theo cấu trúc sortKey và sortValue ở query)
+    const sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+      sort[req.query.sortKey] = req.query.sortValue;
+    }
+    console.log(sort);
+    const tasks = await Task.find(find)
+      .select("title status timeStart timeFinish")
+      .sort(sort);
 
     res.json(tasks);
   } catch (error) {

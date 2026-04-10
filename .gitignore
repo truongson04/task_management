@@ -1,0 +1,7 @@
+
+node_modules/
+bin/
+build/
+.venv/
+.env
+.env.local

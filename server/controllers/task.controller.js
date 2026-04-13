@@ -59,3 +59,44 @@ module.exports.getTaskDetails = async (req, res) => {
     });
   }
 };
+module.exports.changeTaskStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    await Task.updateOne(
+      {
+        _id: id,
+      },
+      {
+        status: status,
+      },
+    );
+    return res.status(200).json({ message: "Updated successfully !!" });
+  } catch (error) {
+    return res.status(400).json({ message: "Failed to update" });
+  }
+};
+// server nhận danh sách ids, key cần thay đổi và giá trị thay đổi
+module.exports.changeMulti = async (req, res) => {
+  const { ids, key, value } = req.body;
+  try {
+    switch (key) {
+      case "status":
+        await Task.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            status: value,
+          },
+        );
+        break;
+      default:
+        return res.status(400).json({ message: "Check your value again" });
+    }
+    return res.status(200).json({ message: "Updated successfully!" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Failed to update!!" });
+  }
+};

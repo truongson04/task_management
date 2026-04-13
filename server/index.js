@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const dbConnection = require("./config/database");
 const route = require("./routes/index");
+app.use(express.json());
 dbConnection.connect();
 route(app);
 

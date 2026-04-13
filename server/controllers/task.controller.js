@@ -12,10 +12,30 @@ module.exports.getAllTasks = async (req, res) => {
     if (req.query.sortKey && req.query.sortValue) {
       sort[req.query.sortKey] = req.query.sortValue;
     }
-    console.log(sort);
+    // các query thường có trên url
+    let skipPagination = 0;
+    let limitPagination = 0;
+    let keyword = "";
+
+    if (parseInt(req.query.page)) {
+      if (parseInt(req.query.limit)) {
+        limitPagination = parseInt(req.query.limit);
+        skipPagination = (parseInt(req.query.page) - 1) * limitPagination;
+      } else {
+        skipPagination = (parseInt(req.query.page) - 1) * 3;
+      }
+    }
+    if (req.query.keyword) {
+      keyword = req.query.keyword;
+      const regex = new RegExp(keyword, "i");
+      find.title = regex;
+    }
+
     const tasks = await Task.find(find)
       .select("title status timeStart timeFinish")
-      .sort(sort);
+      .sort(sort)
+      .limit(limitPagination)
+      .skip(skipPagination);
 
     res.json(tasks);
   } catch (error) {
